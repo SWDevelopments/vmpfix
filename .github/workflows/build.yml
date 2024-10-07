@@ -1,0 +1,38 @@
+name: Build C++ Project
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up CMake
+        uses: jwlawson/actions-setup-cmake@v1
+        with:
+          cmake-version: '3.21' # Specify the CMake version
+
+      - name: Configure
+        run: |
+          mkdir build
+          cd build
+          cmake -G "Visual Studio 16 2019" .. # Specify the generator for Visual Studio
+
+      - name: Build
+        run: |
+          cd build
+          cmake --build . --config Release
+
+      - name: Run tests (if any)
+        run: |
+          cd build
+          ctest --output-on-failure
